@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using app2.Models;
+using app2.Dtos.Users;
+using app2.Dtos.Common;
 
 namespace app2.Controllers;
 
@@ -8,109 +8,44 @@ namespace app2.Controllers;
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly app2.Services.IUserService _userService;
     private readonly ILogger<UserController> _logger;
 
-    public UserController(AppDbContext context, ILogger<UserController> logger)
+    public UserController(app2.Services.IUserService userService, ILogger<UserController> logger)
     {
-        _context = context;
+        _userService = userService;
         _logger = logger;
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserResponse>> CreateUser([FromBody] CreateUserRequest request)
+    public async Task<ActionResult<ApiResponse<UserResponse>>> CreateUser([FromBody] CreateUserRequest request)
     {
-        try
+        var result = await _userService.CreateUserAsync(request);
+        if (result.Status == 0)
         {
-            // 验证输入
-            if (string.IsNullOrWhiteSpace(request.Name))
-            {
-                return BadRequest("用户名不能为空");
-            }
-
-            if (string.IsNullOrWhiteSpace(request.Password))
-            {
-                return BadRequest("密码不能为空");
-            }
-
-            // 检查用户名是否已存在 - 使用EF Core的FirstOrDefaultAsync
-            var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.name == request.Name && !u.is_delete);
-            
-            if (existingUser != null)
-            {
-                return Conflict("用户名已存在");
-            }
-
-            // 创建新用户 - 时间戳会自动设置
-            var user = new User
-            {
-                name = request.Name,
-                password = request.Password, // 注意：实际项目中应该对密码进行哈希处理
-                is_delete = false
-                // create_time 和 update_time 会在SaveChangesAsync时自动设置
-            };
-
-            // 使用EF Core添加和保存
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("用户创建成功，ID: {UserId}, 用户名: {UserName}", user.id, user.name);
-
-            // 返回创建的用户（不包含密码）
-            var userResponse = new UserResponse
-            {
-                Id = user.id,
-                Name = user.name,
-                CreateTime = user.create_time,
-                UpdateTime = user.update_time
-            };
-
-            return CreatedAtAction(nameof(GetUser), new { id = user.id }, userResponse);
+            return StatusCode(result.Code, result);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "创建用户时发生错误");
-            return StatusCode(500, "服务器内部错误");
-        }
+        return CreatedAtAction(nameof(GetUser), new { id = result.Data.Id }, result);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserResponse>> GetUser(int id)
+    public async Task<ActionResult<ApiResponse<UserResponse>>> GetUser(int id)
     {
-        // 使用EF Core的FirstOrDefaultAsync查询
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.id == id && !u.is_delete);
-
-        if (user == null)
-        {
-            return NotFound("用户不存在");
-        }
-
-        var userResponse = new UserResponse
-        {
-            Id = user.id,
-            Name = user.name,
-            CreateTime = user.create_time,
-            UpdateTime = user.update_time
-        };
-
-        return userResponse;
+        var result = await _userService.GetUserAsync(id);
+        return StatusCode(result.Code, result);
     }
-}
 
-// 请求模型
-public class CreateUserRequest
-{
-    public string Name { get; set; }
-    public string Password { get; set; }
-}
+    [HttpPut("{id}/password")]
+    public async Task<ActionResult<ApiResponse<object>>> UpdatePassword(int id, [FromBody] UpdatePasswordRequest request)
+    {
+        var result = await _userService.UpdatePasswordAsync(id, request);
+        return StatusCode(result.Code, result);
+    }
 
-// 响应模型
-public class UserResponse
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public DateTime CreateTime { get; set; }
-    public DateTime UpdateTime { get; set; }
+    [HttpPost("password")]
+    public async Task<ActionResult<ApiResponse<object>>> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        var result = await _userService.ChangePasswordAsync(request);
+        return StatusCode(result.Code, result);
+    }
 }
