@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\study\\c\\app2\\app2.csproj": {}
+    "/Users/ten/Desktop/study/cSharp/app2/app2.csproj": {}
   },
   "projects": {
-    "D:\\study\\c\\app2\\app2.csproj": {
+    "/Users/ten/Desktop/study/cSharp/app2/app2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\study\\c\\app2\\app2.csproj",
+        "projectUniqueName": "/Users/ten/Desktop/study/cSharp/app2/app2.csproj",
         "projectName": "app2",
-        "projectPath": "D:\\study\\c\\app2\\app2.csproj",
-        "packagesPath": "C:\\Users\\tianen.gu\\.nuget\\packages\\",
-        "outputPath": "D:\\study\\c\\app2\\obj\\",
+        "projectPath": "/Users/ten/Desktop/study/cSharp/app2/app2.csproj",
+        "packagesPath": "/Users/ten/.nuget/packages/",
+        "outputPath": "/Users/ten/Desktop/study/cSharp/app2/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\tianen.gu\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/ten/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -37,12 +37,17 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.21, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[9.0.10, )"
@@ -77,6 +82,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.19, 8.0.19]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.osx-arm64",
+              "version": "[8.0.19, 8.0.19]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.19, 8.0.19]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -85,7 +104,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.409/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -10,13 +10,18 @@ public class UserController : ControllerBase
 {
     private readonly app2.Services.IUserService _userService;
     private readonly ILogger<UserController> _logger;
-
+    
     public UserController(app2.Services.IUserService userService, ILogger<UserController> logger)
     {
         _userService = userService;
         _logger = logger;
     }
 
+    /// <summary>
+    /// 创建用户
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult<ApiResponse<UserResponse>>> CreateUser([FromBody] CreateUserRequest request)
     {
@@ -27,7 +32,11 @@ public class UserController : ControllerBase
         }
         return CreatedAtAction(nameof(GetUser), new { id = result.Data.Id }, result);
     }
-
+    /// <summary>
+    /// 获取用户
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id}")]
     public async Task<ActionResult<ApiResponse<UserResponse>>> GetUser(int id)
     {
@@ -35,13 +44,23 @@ public class UserController : ControllerBase
         return StatusCode(result.Code, result);
     }
 
+    /// <summary>
+    /// 更新用户密码
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPut("{id}/password")]
     public async Task<ActionResult<ApiResponse<object>>> UpdatePassword(int id, [FromBody] UpdatePasswordRequest request)
     {
         var result = await _userService.UpdatePasswordAsync(id, request);
         return StatusCode(result.Code, result);
     }
-
+    /// <summary>
+    /// 密码重置
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPost("password")]
     public async Task<ActionResult<ApiResponse<object>>> ChangePassword([FromBody] ChangePasswordRequest request)
     {
